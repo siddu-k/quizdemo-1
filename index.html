@@ -48,7 +48,7 @@
 
     input[type="text"],
     input[type="tel"] {
-      width: 95%;
+      width: 100%;
       padding: 12px;
       margin-top: 5px;
       margin-bottom: 15px;
@@ -161,7 +161,7 @@
   </style>
 </head>
 <body>
-  <h1>QUANTUM CODERS QUIZ - 1</h1>
+  <h1>Welcome to the Quiz Site!</h1>
 
   <!-- Step 1: User Information Form -->
   <form id="userInfoForm">
@@ -171,8 +171,8 @@
     <label for="mobile">Mobile Number:</label>
     <input type="tel" id="mobile" name="mobile" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number" required>
 
-    <label for="pin">Pin Num:</label>
-    <input type="text" id="pin" name="pin" placeholder="Enter your roll" required>
+    <label for="pin">Pin Code:</label>
+    <input type="text" id="pin" name="pin" placeholder="Enter your pin code" required>
 
     <button type="submit">Next</button>
   </form>
@@ -201,26 +201,43 @@
     let currentQuestionIndex = 0;
     let score = 0;
 
-    // Quiz questions and answers
-    const quizQuestions = [
-      {
-        question: "What is the capital of France?",
-        options: ["Paris", "London", "Berlin"],
-        correctAnswer: "Paris"
-      },
-      {
-        question: "What is 2 + 2?",
-        options: ["3", "4", "5"],
-        correctAnswer: "4"
-      },
-      {
-        question: "Who wrote 'Romeo and Juliet'?",
-        options: ["Shakespeare", "Charles Dickens", "Mark Twain"],
-        correctAnswer: "Shakespeare"
-      }
+    // Original Quiz Questions (Master List)
+    const originalQuizQuestions = [
+      { question: "What would be the output of the expression 11^5?", options: ["6", "8", "14", "15"], correctAnswer: "14" },
+      { question: "Which is not a valid expression?", options: ["–p++", "++p--", "++6", "++x++"], correctAnswer: "++6" },
+      { question: "Identify the separator in C.", options: ["White space character", "comment", "Option a and b", "semicolon"], correctAnswer: "semicolon" },
+      { question: "What format is used to print a character with a printf() function?", options: ["%s", "%c", "%char", "%lc"], correctAnswer: "%c" },
+      { question: "The number of bitwise operators in C is", options: ["4", "5", "6", "7"], correctAnswer: "6" },
+      { question: "What is the purpose of flag 0 used in printf() function?", options: ["Leading blanks are displayed", "Leading zeros are displayed", "– sign precedes", "+ or – sign precedes"], correctAnswer: "Leading zeros are displayed" },
+      { question: "Which is not a valid expression?", options: ["+OXAB5", "-0525", "15-", "+a"], correctAnswer: "15-" },
+      { question: "The number of unary arithmetic operators in C is", options: ["1", "4", "3", "2"], correctAnswer: "2" },
+      { question: "A hexa constant is preceded by", options: ["O X", "O", "HX", "0"], correctAnswer: "0" },
+      { question: "Which is not a keyword in C?", options: ["Const", "main", "Sizeof", "void"], correctAnswer: "main" },
+      { question: "Identify the correct statement given double x;", options: ["scanf(\"%d\", &x);", "scanf(\"%f\", x);", "scanf(\"%d\", *x);", "scanf(\"%f\", &x);"], correctAnswer: "scanf(\"%f\", &x);" },
+      { question: "p++ executes faster than p+1 since", options: ["P uses register", "single mechanism instruction is required for p++", "Options a and b", "none of the above"], correctAnswer: "Options a and b" },
+      { question: "The bitwise OR is used for", options: ["set the desired bits to 1", "multiply numbers", "Divide numbers", "mask the bits"], correctAnswer: "set the desired bits to 1" },
+      { question: "Which of the following is not a bitwise operator?", options: ["&", "^", "|", "||"], correctAnswer: "||" },
+      { question: "The result of expression ~~7 is", options: ["7", "1", "0", "invalid expression"], correctAnswer: "7" },
+      { question: "Identify the derived data type in C.", options: ["int", "float", "union", "char"], correctAnswer: "union" },
+      { question: "Which operator has the highest priority?", options: ["()", "->", ".", "all the above"], correctAnswer: "all the above" },
+      { question: "The equality operator is represented by", options: [":=", ".EQ.", "=", "=="], correctAnswer: "==" },
+      { question: "If X=2, y=6, and z=6 then, what will be the output of X=Y=Z; Printf(\"%d\", x);", options: ["0", "1", "2", "6"], correctAnswer: "6" },
+      { question: "int I=20; Printf(\"%X\", I); What will be the output?", options: ["x14", "14", "20", "none of these"], correctAnswer: "14" },
+      { question: "Header files in C contain", options: ["Compiler commands", "library functions", "Header information of C programs", "operators for file"], correctAnswer: "library functions" },
+      { question: "The symbol of left shift operator is", options: ["<", "<<", "<=", "<<<"], correctAnswer: "<<" },
+      { question: "The number of binary arithmetic operators in C is", options: ["5", "4", "6", "7"], correctAnswer: "5" },
+      { question: "Integral data type includes", options: ["enum", "int", "Char", "all the above"], correctAnswer: "all the above" },
+      { question: "Which is executed quickly?", options: ["p++", "++p", "Option a and b", "p+1"], correctAnswer: "Option a and b" },
+      { question: "A character constant is written within", options: ["Double quotes", "single quotes", "option a and b", "none of the above"], correctAnswer: "single quotes" },
+      { question: "What is the purpose of flag - in printf() function", options: ["Centered", "right justified", "Putting sign", "left justified"], correctAnswer: "left justified" },
+      { question: "The type cast operator", options: ["&", "cast ()", "//", "\"\""], correctAnswer: "cast ()" },
+      { question: "Identify the invalid constant.", options: ["\" \"", "' '", "'in'", "'\\b'"], correctAnswer: "'in'" },
+      { question: "Where was the C language developed?", options: ["Microsoft Corporation", "Sun Microsystems", "AT&T Bell Laboratory", "CERN, European Particle Physics Laboratory"], correctAnswer: "AT&T Bell Laboratory" },
+      { question: "Which is not a valid floating constant?", options: ["4E-6f", "4E 12", "0.08e-4", "1.3345F"], correctAnswer: "4E 12" }
     ];
 
     let timerInterval; // To store the timer interval
+    let hasLeftOnce = false; // Track if the user has left the page once
 
     // Handle User Info Submission
     document.getElementById('userInfoForm').addEventListener('submit', function (e) {
@@ -244,22 +261,82 @@
       startQuiz();
     });
 
+    // Function to shuffle the quiz questions (Fisher-Yates Shuffle Algorithm)
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+      }
+      return array;
+    }
+
     // Function to start the quiz
     function startQuiz() {
-      loadQuestion();
-      startTimer(2 * 60 * 60); // 2 hours in seconds
+      // Create a shuffled copy of the original questions for this user
+      const shuffledQuestions = shuffleArray([...originalQuizQuestions]);
+
+      // Load the first question
+      loadQuestion(shuffledQuestions); // Pass the shuffled questions to the loader
+      startTimer(30 * 60); // Start the timer for 30 minutes
+    }
+
+    // Start Timer Function
+    function startTimer(seconds) {
+      let timeLeft = seconds;
+      const timerElement = document.getElementById('timer');
+
+      timerInterval = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+
+        timerElement.textContent = `Time left: ${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          alert("Time's up! Submitting your quiz...");
+          submitResults(); // Automatically submit results when time runs out
+        }
+
+        timeLeft--;
+      }, 1000);
+    }
+
+    // Handle visibility change (reset quiz if user switches tabs or minimizes browser)
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') {
+        if (!hasLeftOnce) {
+          // First time leaving: Show a warning popup
+          alert("Warning: Leaving the quiz may result in a reset! Please stay on the page.");
+          hasLeftOnce = true; // Mark that the user has left once
+        } else {
+          // Second time leaving: Reset the quiz
+          alert("You left the quiz again! The quiz will now reset.");
+          resetQuiz();
+        }
+      }
+    });
+
+    // Function to reset the quiz
+    function resetQuiz() {
+      clearInterval(timerInterval); // Stop the timer
+      currentQuestionIndex = 0; // Reset question index
+      score = 0; // Reset score
+      quizAnswers = {}; // Clear saved answers
+
+      // Reload the page to restart the quiz
+      window.location.reload();
     }
 
     // Function to load the current question
-    function loadQuestion() {
-      if (currentQuestionIndex >= quizQuestions.length) {
+    function loadQuestion(shuffledQuestions) {
+      if (currentQuestionIndex >= shuffledQuestions.length) {
         // If all questions are answered, calculate and submit results
         clearInterval(timerInterval); // Stop the timer
         submitResults();
         return;
       }
 
-      const question = quizQuestions[currentQuestionIndex];
+      const question = shuffledQuestions[currentQuestionIndex];
       document.getElementById('question-title').textContent = `Question ${currentQuestionIndex + 1}`;
       const questionContainer = document.getElementById('current-question');
       questionContainer.innerHTML = `
@@ -275,28 +352,6 @@
       `;
     }
 
-    // Start Timer Function
-    function startTimer(seconds) {
-      let timeLeft = seconds;
-      const timerElement = document.getElementById('timer');
-
-      timerInterval = setInterval(() => {
-        const hours = Math.floor(timeLeft / 3600);
-        const minutes = Math.floor((timeLeft % 3600) / 60);
-        const secs = timeLeft % 60;
-
-        timerElement.textContent = `Time left: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          alert("Time's up! Submitting your quiz...");
-          submitResults(); // Automatically submit results when time runs out
-        }
-
-        timeLeft--;
-      }, 1000);
-    }
-
     // Handle "Next" button click
     document.getElementById('next-button').addEventListener('click', function () {
       const selectedAnswer = document.querySelector('input[name="answer"]:checked');
@@ -307,7 +362,8 @@
       }
 
       // Check if the answer is correct
-      if (selectedAnswer.value === quizQuestions[currentQuestionIndex].correctAnswer) {
+      const currentQuestion = originalQuizQuestions[currentQuestionIndex]; // Use the original order for validation
+      if (selectedAnswer.value === currentQuestion.correctAnswer) {
         score++;
       }
 
@@ -316,7 +372,7 @@
 
       // Move to the next question
       currentQuestionIndex++;
-      loadQuestion();
+      loadQuestion([...originalQuizQuestions]); // Reload questions with the shuffled order
     });
 
     // Function to submit results to Google Sheets
@@ -326,7 +382,7 @@
       formData.append('name', userInfo.name);
       formData.append('mobile', userInfo.mobile);
       formData.append('pin', userInfo.pin);
-      formData.append('score', `${score} out of ${quizQuestions.length}`);
+      formData.append('score', `${score} out of ${originalQuizQuestions.length}`);
 
       console.log("FormData:", Object.fromEntries(formData.entries())); // Log FormData for debugging
 
@@ -336,6 +392,7 @@
 
       // Send data to Google Apps Script
       fetch('https://script.google.com/macros/s/AKfycbxdIIE2x6saWoOoXM2R9r8qK7l1AP0YSPRS1kEE6HcA9mBs6wEUmJ3ApNEVmXl8xshjVw/exec', {
+
         method: 'POST',
         body: new URLSearchParams(formData)
       })
@@ -346,7 +403,7 @@
           document.querySelector('.result-container').style.display = 'block';
 
           // Display the score
-          document.getElementById('score').textContent = `${score} out of ${quizQuestions.length}`;
+          document.getElementById('score').textContent = `${score} out of ${originalQuizQuestions.length}`;
         })
         .catch(error => {
           console.error('Error:', error);
