@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Site</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #4CAF50;
+      margin-bottom: 20px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    form {
+      max-width: 500px;
+      width: 90%;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      text-align: left;
+      margin: 0 auto;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 8px;
+      display: block;
+      color: #555;
+      font-size: 1rem;
+    }
+
+    input[type="text"],
+    input[type="tel"] {
+      width: 95%;
+      padding: 12px;
+      margin-top: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="tel"]:focus {
+      border-color: #4CAF50;
+      outline: none;
+    }
+
+    input[type="radio"] {
+      margin-right: 10px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-top: 15px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .quiz-container, .result-container {
+      display: none;
+    }
+
+    /* Timer Styling */
+    #timer {
+      font-size: 1.1rem;
+      color: #e74c3c;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* Please Wait Message */
+    .please-wait {
+      display: none;
+      font-size: 1rem;
+      color: #4CAF50;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    /* Radio Button Styling */
+    .options-container {
+      margin-bottom: 20px;
+    }
+
+    .options-container label {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .options-container label:hover {
+      background-color: #f0f8ff;
+      border-color: #4CAF50;
+    }
+
+    .options-container input[type="radio"] {
+      margin-right: 15px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      form {
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      form {
+        padding: 15px;
+      }
+
+      button {
+        font-size: 0.9rem;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>QUANTUM CODERS QUIZ - 1</h1>
+
+  <!-- Step 1: User Information Form -->
+  <form id="userInfoForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+    <label for="mobile">Mobile Number:</label>
+    <input type="tel" id="mobile" name="mobile" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number" required>
+
+    <label for="pin">Pin Num:</label>
+    <input type="text" id="pin" name="pin" placeholder="Enter your roll" required>
+
+    <button type="submit">Next</button>
+  </form>
+
+  <!-- Step 2: Quiz Questions -->
+  <div class="quiz-container">
+    <h2 id="question-title">Question 1</h2>
+    <div id="timer"></div>
+    <form id="quizForm">
+      <div id="current-question" class="options-container"></div>
+      <button type="button" id="next-button">Next</button>
+      <div class="please-wait" id="please-wait">Please wait...</div>
+    </form>
+  </div>
+
+  <!-- Step 3: Results -->
+  <div class="result-container">
+    <h2>Quiz Results</h2>
+    <p>Your score: <span id="score"></span></p>
+  </div>
+
+  <script>
+    // Store user info and quiz answers
+    let userInfo = {};
+    let quizAnswers = {};
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    // Quiz questions and answers
+    const quizQuestions = [
+      {
+        question: "What is the capital of France?",
+        options: ["Paris", "London", "Berlin"],
+        correctAnswer: "Paris"
+      },
+      {
+        question: "What is 2 + 2?",
+        options: ["3", "4", "5"],
+        correctAnswer: "4"
+      },
+      {
+        question: "Who wrote 'Romeo and Juliet'?",
+        options: ["Shakespeare", "Charles Dickens", "Mark Twain"],
+        correctAnswer: "Shakespeare"
+      }
+    ];
+
+    let timerInterval; // To store the timer interval
+
+    // Handle User Info Submission
+    document.getElementById('userInfoForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Collect user info
+      userInfo.name = document.getElementById('name').value.trim();
+      userInfo.mobile = document.getElementById('mobile').value.trim();
+      userInfo.pin = document.getElementById('pin').value.trim();
+
+      if (!userInfo.name || !userInfo.mobile || !userInfo.pin) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      // Hide user info form and show quiz container
+      document.getElementById('userInfoForm').style.display = 'none';
+      document.querySelector('.quiz-container').style.display = 'block';
+
+      // Start the quiz and timer
+      startQuiz();
+    });
+
+    // Function to start the quiz
+    function startQuiz() {
+      loadQuestion();
+      startTimer(2 * 60 * 60); // 2 hours in seconds
+    }
+
+    // Function to load the current question
+    function loadQuestion() {
+      if (currentQuestionIndex >= quizQuestions.length) {
+        // If all questions are answered, calculate and submit results
+        clearInterval(timerInterval); // Stop the timer
+        submitResults();
+        return;
+      }
+
+      const question = quizQuestions[currentQuestionIndex];
+      document.getElementById('question-title').textContent = `Question ${currentQuestionIndex + 1}`;
+      const questionContainer = document.getElementById('current-question');
+      questionContainer.innerHTML = `
+        <label>${question.question}</label>
+        <div class="options-container">
+          ${question.options.map(option => `
+            <label>
+              <input type="radio" name="answer" value="${option}">
+              ${option}
+            </label>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    // Start Timer Function
+    function startTimer(seconds) {
+      let timeLeft = seconds;
+      const timerElement = document.getElementById('timer');
+
+      timerInterval = setInterval(() => {
+        const hours = Math.floor(timeLeft / 3600);
+        const minutes = Math.floor((timeLeft % 3600) / 60);
+        const secs = timeLeft % 60;
+
+        timerElement.textContent = `Time left: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          alert("Time's up! Submitting your quiz...");
+          submitResults(); // Automatically submit results when time runs out
+        }
+
+        timeLeft--;
+      }, 1000);
+    }
+
+    // Handle "Next" button click
+    document.getElementById('next-button').addEventListener('click', function () {
+      const selectedAnswer = document.querySelector('input[name="answer"]:checked');
+
+      if (!selectedAnswer) {
+        alert("Please select an answer before proceeding.");
+        return;
+      }
+
+      // Check if the answer is correct
+      if (selectedAnswer.value === quizQuestions[currentQuestionIndex].correctAnswer) {
+        score++;
+      }
+
+      // Save the answer
+      quizAnswers[`q${currentQuestionIndex + 1}`] = selectedAnswer.value;
+
+      // Move to the next question
+      currentQuestionIndex++;
+      loadQuestion();
+    });
+
+    // Function to submit results to Google Sheets
+    function submitResults() {
+      // Combine user info and quiz score
+      const formData = new FormData();
+      formData.append('name', userInfo.name);
+      formData.append('mobile', userInfo.mobile);
+      formData.append('pin', userInfo.pin);
+      formData.append('score', `${score} out of ${quizQuestions.length}`);
+
+      console.log("FormData:", Object.fromEntries(formData.entries())); // Log FormData for debugging
+
+      // Show "Please wait" message
+      document.getElementById('please-wait').style.display = 'block';
+      document.getElementById('next-button').disabled = true;
+
+      // Send data to Google Apps Script
+      fetch('https://script.google.com/macros/s/AKfycbxdIIE2x6saWoOoXM2R9r8qK7l1AP0YSPRS1kEE6HcA9mBs6wEUmJ3ApNEVmXl8xshjVw/exec', {
+        method: 'POST',
+        body: new URLSearchParams(formData)
+      })
+        .then(response => response.text())
+        .then(data => {
+          // Hide quiz container and show result container
+          document.querySelector('.quiz-container').style.display = 'none';
+          document.querySelector('.result-container').style.display = 'block';
+
+          // Display the score
+          document.getElementById('score').textContent = `${score} out of ${quizQuestions.length}`;
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while submitting the form.');
+        });
+    }
+  </script>
+</body>
+</html>
