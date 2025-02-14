@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz Site</title>
+  <title>Quiz site</title>
   <style>
+     @import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Bungee+Hairline&family=Doto:wght@100..900&family=Fascinate+Inline&family=Nabla&family=Roboto:ital,wght@0,100..900;1,100..900&family=Rubik+Glitch&family=Tourney:ital,wght@0,100..900;1,100..900&display=swap');
+     @import url('https://fonts.googleapis.com/css2?family=Iceland&display=swap');
     /* General Styles */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -21,7 +23,8 @@
 
     h1 {
       font-size: 2.5rem;
-      color: #4CAF50;
+      font-family: "Iceland", serif;
+      color: #000000;
       margin-bottom: 20px;
       text-align: center;
       letter-spacing: 1px;
@@ -48,7 +51,7 @@
 
     input[type="text"],
     input[type="tel"] {
-      width: 100%;
+      width: 90%;
       padding: 12px;
       margin-top: 5px;
       margin-bottom: 15px;
@@ -60,7 +63,7 @@
 
     input[type="text"]:focus,
     input[type="tel"]:focus {
-      border-color: #4CAF50;
+      border-color: #000000;
       outline: none;
     }
 
@@ -69,7 +72,7 @@
     }
 
     button {
-      background-color: #4CAF50;
+      background-color: #000000;
       color: white;
       font-weight: bold;
       cursor: pointer;
@@ -88,6 +91,7 @@
 
     .quiz-container, .result-container {
       display: none;
+
     }
 
     /* Timer Styling */
@@ -97,6 +101,8 @@
       margin-bottom: 20px;
       text-align: center;
       font-weight: bold;
+      font-family: "Iceland", serif;
+
     }
 
     /* Please Wait Message */
@@ -165,13 +171,13 @@
 
   <!-- Step 1: User Information Form -->
   <form id="userInfoForm">
-    <label for="name">Name:</label>
+    <label for="name">Name :</label>
     <input type="text" id="name" name="name" placeholder="Enter your name" required>
 
-    <label for="mobile">Mobile Number:</label>
+    <label for="mobile">Mobile Number :</label>
     <input type="tel" id="mobile" name="mobile" pattern="[0-9]{10}" placeholder="Enter 10-digit mobile number" required>
 
-    <label for="pin">Pin</label>
+    <label for="pin">Pin :</label>
     <input type="text" id="pin" name="pin" placeholder="Enter your roll" required>
 
     <button type="submit">Next</button>
